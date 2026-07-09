@@ -5,10 +5,18 @@ import { PreviewPanel } from "./components/PreviewPanel";
 import { UploadZone } from "./components/UploadZone";
 import { useGif } from "./hooks/useGif";
 import { useTheme } from "./hooks/useTheme";
+import { useI18n } from "./i18n/I18nProvider";
+import { isTranslationKey, type TranslationKey } from "./i18n/translations";
 
 function App() {
 	const { theme, toggleTheme } = useTheme();
 	const { state, loadFromFile, setViewMode, reset } = useGif();
+	const { t } = useI18n();
+
+	// Errors thrown by useGif are stored as i18n keys; translate before display.
+	const errorText = state.status === "error"
+		? (isTranslationKey(state.message) ? t(state.message as TranslationKey) : state.message)
+		: undefined;
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -25,31 +33,21 @@ function App() {
 						<div className="space-y-4">
 							<div className="text-center pt-4 sm:pt-8">
 								<h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-									一个超轻量的
+									{t("app.heroTitle")}
 									{" "}
 									<span className="bg-gradient-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent">
 										GIF
 									</span>
 									{" "}
-									在线演示
+									{t("app.heroSubtitle")}
 								</h2>
 								<p className="mt-2 text-sm sm:text-base text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto">
-									全部在浏览器中完成解码、预览与重新编码，基于
-									{" "}
-									<a
-										href="https://github.com/sindresorhus/gifkit"
-										target="_blank"
-										rel="noreferrer noopener"
-										className="underline underline-offset-2 hover:text-indigo-500"
-									>
-										@sindresorhus/gifkit
-									</a>
-									。
+									{t("app.heroDescription", { lib: "@sindresorhus/gifkit" })}
 								</p>
 							</div>
 							<UploadZone
 								onFile={loadFromFile}
-								errorMessage={state.status === "error" ? state.message : undefined}
+								errorMessage={errorText}
 							/>
 						</div>
 					)
@@ -60,7 +58,7 @@ function App() {
 						<div className="flex items-center justify-center py-20 text-zinc-500 dark:text-zinc-400">
 							<div className="flex items-center gap-3">
 								<div className="h-5 w-5 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-								正在解析 GIF…
+								{t("app.loading")}
 							</div>
 						</div>
 					)
@@ -94,8 +92,8 @@ function App() {
 			</main>
 
 			<footer className="border-t border-zinc-200 dark:border-zinc-800 py-4 text-center text-xs text-zinc-500 dark:text-zinc-400">
-				Powered by
-				{" "}
+				{t("app.footer")}
+				{" · "}
 				<a
 					href="https://github.com/sindresorhus/gifkit"
 					target="_blank"
@@ -104,8 +102,6 @@ function App() {
 				>
 					@sindresorhus/gifkit
 				</a>
-				{" "}
-				· 纯前端演示，不会上传文件
 			</footer>
 		</div>
 	);

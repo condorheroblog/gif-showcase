@@ -1,5 +1,6 @@
 import type { ChangeEvent, DragEvent } from "react";
 import { useCallback, useRef, useState } from "react";
+import { useI18n } from "../i18n/I18nProvider";
 
 interface UploadZoneProps {
 	onFile: (file: File) => void
@@ -10,6 +11,7 @@ interface UploadZoneProps {
 const MAX_BYTES = 20 * 1024 * 1024; // 20 MB
 
 export function UploadZone({ onFile, errorMessage, disabled }: UploadZoneProps) {
+	const { t } = useI18n();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [isDragging, setIsDragging] = useState(false);
 	const [localError, setLocalError] = useState<string | null>(null);
@@ -21,12 +23,12 @@ export function UploadZone({ onFile, errorMessage, disabled }: UploadZoneProps) 
 				return;
 			}
 			if (file.size > MAX_BYTES) {
-				setLocalError(`文件太大（${(file.size / 1024 / 1024).toFixed(1)} MB），最大支持 20 MB。`);
+				setLocalError(t("upload.fileTooLarge", { size: (file.size / 1024 / 1024).toFixed(1) }));
 				return;
 			}
 			onFile(file);
 		},
-		[onFile],
+		[onFile, t],
 	);
 
 	const handleInput = useCallback(
@@ -91,11 +93,12 @@ export function UploadZone({ onFile, errorMessage, disabled }: UploadZoneProps) 
 				/>
 				<div>
 					<p className="text-lg sm:text-xl font-semibold">
-						拖拽 GIF 到此处，或
-						<span className="text-indigo-500">点击选择文件</span>
+						{t("upload.prompt")}
+						{" "}
+						<span className="text-indigo-500">{t("upload.promptAction")}</span>
 					</p>
 					<p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-						支持 .gif 格式 · 最大 20 MB · 文件不会上传到服务器
+						{t("upload.hint")}
 					</p>
 				</div>
 				{error

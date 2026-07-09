@@ -7,6 +7,8 @@ import {
 	resizeRgbaFrames,
 	triggerDownload,
 } from "../lib/gif";
+import { useI18n } from "../i18n/I18nProvider";
+import { isTranslationKey, type TranslationKey } from "../i18n/translations";
 
 interface EditorPanelProps {
 	decoded: DecodedAnimatedGIF
@@ -23,6 +25,7 @@ function gcd(a: number, b: number): number {
 }
 
 export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
+	const { t } = useI18n();
 	const { width: sourceWidth, height: sourceHeight, frames } = decoded;
 	const { thumbnails } = useFrameThumbnails(frames, sourceWidth, sourceHeight);
 
@@ -150,11 +153,11 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 	const onExport = async () => {
 		setExportError(null);
 		if (selectedFrames.length === 0) {
-			setExportError("请至少保留一帧。");
+			setExportError(t("editor.keepOneFrame"));
 			return;
 		}
 		if (targetWidth < MIN_SIZE || targetHeight < MIN_SIZE) {
-			setExportError(`尺寸不能小于 ${MIN_SIZE}px。`);
+			setExportError(t("editor.sizeTooSmall", { min: MIN_SIZE }));
 			return;
 		}
 		setIsExporting(true);
@@ -176,7 +179,9 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 			triggerDownload(blob, `${base}-edited.gif`);
 		}
 		catch (error) {
-			const message = error instanceof Error ? error.message : "导出失败";
+			const raw = error instanceof Error ? error.message : "";
+			const fallback = t("editor.exportFail");
+			const message = isTranslationKey(raw) ? t(raw as TranslationKey) : (raw || fallback);
 			setExportError(message);
 		}
 		finally {
@@ -193,37 +198,30 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 	return (
 		<section className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm p-4 sm:p-5 space-y-5">
 			<div className="flex items-center justify-between">
-				<h3 className="text-base sm:text-lg font-semibold">编辑</h3>
+				<h3 className="text-base sm:text-lg font-semibold">{t("editor.title")}</h3>
 				<span className="text-xs text-zinc-500 dark:text-zinc-400">
-					已选
-					{" "}
-					{selectedCount}
-					{" "}
-					/
-					{totalCount}
-					{" "}
-					帧
+					{t("editor.selected", { selected: selectedCount, total: totalCount })}
 				</span>
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 				<div>
 					<div className="flex items-center justify-between mb-2">
-						<span className="text-sm font-medium">帧选择</span>
+						<span className="text-sm font-medium">{t("editor.frameSelection")}</span>
 						<div className="flex gap-1.5">
 							<button
 								type="button"
 								onClick={selectAll}
 								className="rounded-md border border-zinc-200 dark:border-zinc-700 px-2 py-1 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-[0.98] transition"
 							>
-								全选
+								{t("editor.selectAll")}
 							</button>
 							<button
 								type="button"
 								onClick={invertSelection}
 								className="rounded-md border border-zinc-200 dark:border-zinc-700 px-2 py-1 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-[0.98] transition"
 							>
-								反选
+								{t("editor.invertSelection")}
 							</button>
 						</div>
 					</div>
@@ -246,7 +244,10 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 											: "border-zinc-200 dark:border-zinc-700 opacity-40",
 									].join(" ")}
 									style={{ aspectRatio: `${sourceWidth} / ${sourceHeight}` }}
-									title={`帧 ${index + 1} · ${Math.round(frames[index].delay * 1000)} ms`}
+									title={t("preview.frameTitle", {
+										index: index + 1,
+										delay: Math.round(frames[index].delay * 1000),
+									})}
 								>
 									<input
 										type="checkbox"
@@ -258,7 +259,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 										? (
 											<img
 												src={thumbnails[index]}
-												alt={`帧 ${index + 1}`}
+												alt={t("preview.frameAlt", { index: index + 1 })}
 												className="w-full h-full object-cover"
 												draggable={false}
 											/>
@@ -281,7 +282,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 				<div className="space-y-4">
 					<div>
 						<div className="flex items-center justify-between mb-2">
-							<span className="text-sm font-medium">尺寸</span>
+							<span className="text-sm font-medium">{t("editor.dimension")}</span>
 							<label className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
 								<input
 									type="checkbox"
@@ -289,13 +290,13 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 									onChange={event => setLockAspect(event.target.checked)}
 									className="rounded"
 								/>
-								锁定宽高比
+								{t("editor.lockAspect")}
 							</label>
 						</div>
 						<div className="flex items-center gap-2">
 							<div className="flex-1">
 								<label className="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">
-									宽
+									{t("editor.width")}
 								</label>
 								<input
 									type="number"
@@ -314,7 +315,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 							</div>
 							<div className="flex-1">
 								<label className="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">
-									高
+									{t("editor.height")}
 								</label>
 								<input
 									type="number"
@@ -344,7 +345,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 									}}
 									className="rounded-md border border-zinc-200 dark:border-zinc-700 px-2 py-1 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-[0.98] transition"
 								>
-									{factor === 1 ? "原始" : `${factor * 100}%`}
+									{factor === 1 ? t("editor.original") : `${factor * 100}%`}
 								</button>
 							))}
 						</div>
@@ -352,7 +353,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 
 					<div>
 						<div className="flex items-center justify-between mb-1">
-							<span className="text-sm font-medium">压缩质量</span>
+							<span className="text-sm font-medium">{t("editor.quality")}</span>
 							<span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
 								{quality.toFixed(2)}
 							</span>
@@ -367,12 +368,12 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 							className="w-full"
 						/>
 						<p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
-							越低压缩越狠（颜色量化更激进），越高越接近原画质。
+							{t("editor.qualityHint")}
 						</p>
 					</div>
 
 					<div>
-						<span className="text-sm font-medium">循环</span>
+						<span className="text-sm font-medium">{t("editor.loop")}</span>
 						<div className="mt-1 flex gap-2 items-center flex-wrap">
 							<label className="inline-flex items-center gap-1 text-sm">
 								<input
@@ -382,7 +383,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 									onChange={() => setLoopMode("forever")}
 									className="rounded"
 								/>
-								无限
+								{t("editor.loopForever")}
 							</label>
 							<label className="inline-flex items-center gap-1 text-sm">
 								<input
@@ -392,7 +393,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 									onChange={() => setLoopMode(3)}
 									className="rounded"
 								/>
-								指定次数
+								{t("editor.loopCount")}
 							</label>
 							{typeof loopMode === "number"
 								? (
@@ -418,11 +419,10 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 
 			<div>
 				<div className="flex items-center justify-between mb-2">
-					<span className="text-sm font-medium">实时预览</span>
+					<span className="text-sm font-medium">{t("editor.livePreview")}</span>
 					<span className="text-[11px] text-zinc-500 dark:text-zinc-400 tabular-nums">
 						{targetWidth}
-						{" "}
-						×
+						{" × "}
 						{targetHeight}
 					</span>
 				</div>
@@ -439,7 +439,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 						)
 						: (
 							<div className="h-32 flex items-center justify-center text-sm text-zinc-500">
-								请至少保留一帧
+								{t("editor.noFrame")}
 							</div>
 						)}
 				</div>
@@ -465,7 +465,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 							: "bg-gradient-to-r from-indigo-500 to-pink-500 hover:opacity-90",
 					].join(" ")}
 				>
-					{isExporting ? "正在生成…" : "⬇ 保存为新 GIF"}
+					{isExporting ? t("editor.exporting") : t("editor.export")}
 				</button>
 			</div>
 		</section>

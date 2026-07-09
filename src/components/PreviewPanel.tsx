@@ -3,6 +3,8 @@ import type { DecodedAnimatedGIF, DecodedAnimatedGIFFrame } from "../lib/gif";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrameThumbnails } from "../lib/frameCache";
 import { frameToPngBlob, totalDurationSeconds, triggerDownload } from "../lib/gif";
+import { useI18n } from "../i18n/I18nProvider";
+import { isTranslationKey, type TranslationKey } from "../i18n/translations";
 
 interface PreviewPanelProps {
 	decoded: DecodedAnimatedGIF
@@ -10,6 +12,7 @@ interface PreviewPanelProps {
 }
 
 export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
+	const { t } = useI18n();
 	const { width, height, frames } = decoded;
 	const totalDuration = totalDurationSeconds(frames);
 	const { thumbnails } = useFrameThumbnails(frames, width, height);
@@ -84,22 +87,19 @@ export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
 			triggerDownload(blob, `${base}-frame-${String(currentIndex + 1).padStart(3, "0")}.png`);
 		}
 		catch (error) {
-			const message = error instanceof Error ? error.message : "下载失败";
-			window.alert(`无法导出当前帧：${message}`);
+			const raw = error instanceof Error ? error.message : "";
+			const fallback = t("preview.downloadFail");
+			const message = isTranslationKey(raw) ? t(raw as TranslationKey) : (raw || fallback);
+			window.alert(t("preview.exportError", { message }));
 		}
 	};
 
 	return (
 		<section className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm p-4 sm:p-5 space-y-4">
 			<div className="flex items-center justify-between">
-				<h3 className="text-base sm:text-lg font-semibold">预览</h3>
-				<span className="text-xs text-zinc-500 dark:text-zinc-400">
-					帧
-					{" "}
-					{currentIndex + 1}
-					{" "}
-					/
-					{frames.length}
+				<h3 className="text-base sm:text-lg font-semibold">{t("preview.title")}</h3>
+				<span className="text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
+					{t("preview.frameIndex", { index: currentIndex + 1, total: frames.length })}
 				</span>
 			</div>
 
@@ -119,7 +119,7 @@ export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
 					onClick={goPrev}
 					className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-[0.98] transition"
 				>
-					⏮ 上一帧
+					{t("preview.prevFrame")}
 				</button>
 				<button
 					type="button"
@@ -131,44 +131,38 @@ export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
 							: "bg-indigo-500 hover:bg-indigo-600",
 					].join(" ")}
 				>
-					{isPlaying ? "⏸ 暂停" : "▶ 播放"}
+					{isPlaying ? t("preview.pause") : t("preview.play")}
 				</button>
 				<button
 					type="button"
 					onClick={goNext}
 					className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-[0.98] transition"
 				>
-					下一帧 ⏭
+					{t("preview.nextFrame")}
 				</button>
 				<button
 					type="button"
 					onClick={handleDownloadFrame}
 					className="rounded-lg border border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-400 px-3 py-1.5 text-sm font-medium hover:bg-pink-50 dark:hover:bg-pink-950/30 active:scale-[0.98] transition"
 				>
-					⬇ 保存当前帧
+					{t("preview.saveFrame")}
 				</button>
 			</div>
 
 			<div className="text-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 tabular-nums">
-				{Math.round(currentFrameMs)}
-				{" "}
-				ms /
-				{Math.round(totalDuration * 1000)}
-				{" "}
-				ms · 帧间隔
-				{" "}
-				{Math.round(frames[currentIndex].delay * 1000)}
-				{" "}
-				ms
+				{t("preview.frameTiming", {
+					ms: Math.round(currentFrameMs),
+					total: Math.round(totalDuration * 1000),
+					delay: Math.round(frames[currentIndex].delay * 1000),
+				})}
 			</div>
 
 			<div>
 				<div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
-					<span>时间线（拖动跳到指定帧）</span>
+					<span>{t("preview.timelineLabel")}</span>
 					<span className="tabular-nums">
 						{currentIndex + 1}
-						{" "}
-						/
+						{" / "}
 						{frames.length}
 					</span>
 				</div>
@@ -193,13 +187,16 @@ export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
 											: "border-transparent hover:border-zinc-300 dark:hover:border-zinc-600",
 									].join(" ")}
 									style={{ width: 48, height: 48 * (height / width) }}
-									title={`帧 ${index + 1} · ${Math.round(frames[index].delay * 1000)} ms`}
+									title={t("preview.frameTitle", {
+										index: index + 1,
+										delay: Math.round(frames[index].delay * 1000),
+									})}
 								>
 									{thumbnails[index]
 										? (
 											<img
 												src={thumbnails[index]}
-												alt={`帧 ${index + 1}`}
+												alt={t("preview.frameAlt", { index: index + 1 })}
 												className="w-full h-full object-cover"
 												draggable={false}
 											/>
@@ -221,7 +218,7 @@ export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
 						step={1}
 						value={currentIndex}
 						onChange={onScrub}
-						aria-label="帧时间线"
+						aria-label={t("preview.timelineAria")}
 						className="mt-2 w-full"
 					/>
 				</div>

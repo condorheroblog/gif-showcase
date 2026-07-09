@@ -6,6 +6,7 @@ import {
 	formatBytes,
 	totalDurationSeconds,
 } from "../lib/gif";
+import { useI18n } from "../i18n/I18nProvider";
 
 interface InfoPanelProps {
 	file: File
@@ -26,14 +27,15 @@ function Stat({ label, value }: { label: string, value: string }) {
 }
 
 export function InfoPanel({ file, decoded, viewMode, onChangeViewMode }: InfoPanelProps) {
+	const { t } = useI18n();
 	const totalDuration = totalDurationSeconds(decoded.frames);
 	const fps = averageFps(decoded.frames);
 	const loopLabel
 		= decoded.playCount === undefined
-			? "默认（不循环）"
+			? t("info.loopDefault")
 			: decoded.playCount === "forever"
-				? "无限循环"
-				: `${decoded.playCount} 次`;
+				? t("info.loopForever")
+				: t("info.loopTimes", { count: decoded.playCount });
 
 	return (
 		<section className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm p-4 sm:p-5">
@@ -45,22 +47,17 @@ export function InfoPanel({ file, decoded, viewMode, onChangeViewMode }: InfoPan
 						</h2>
 					</div>
 					<p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-						{formatBytes(file.size)}
-						{" "}
-						·
-						{decoded.frames.length}
-						{" "}
-						帧 · 总时长
-						{" "}
-						{(totalDuration * 1000).toFixed(0)}
-						{" "}
-						ms
+						{t("info.summary", {
+							size: formatBytes(file.size),
+							count: decoded.frames.length,
+							ms: (totalDuration * 1000).toFixed(0),
+						})}
 					</p>
 				</div>
 
 				<div
 					role="tablist"
-					aria-label="面板切换"
+					aria-label={t("info.tablist")}
 					className="inline-flex rounded-xl border border-zinc-200 dark:border-zinc-700 p-1 bg-zinc-100 dark:bg-zinc-800/60 self-start shrink-0"
 				>
 					<button
@@ -75,7 +72,7 @@ export function InfoPanel({ file, decoded, viewMode, onChangeViewMode }: InfoPan
 						].join(" ")}
 					>
 						<span className="sm:hidden">▶</span>
-						<span className="hidden sm:inline">▶ 预览</span>
+						<span className="hidden sm:inline">{t("info.previewTab")}</span>
 					</button>
 					<button
 						role="tab"
@@ -89,18 +86,18 @@ export function InfoPanel({ file, decoded, viewMode, onChangeViewMode }: InfoPan
 						].join(" ")}
 					>
 						<span className="sm:hidden">✎</span>
-						<span className="hidden sm:inline">✎ 编辑</span>
+						<span className="hidden sm:inline">{t("info.editTab")}</span>
 					</button>
 				</div>
 			</div>
 
 			<div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-				<Stat label="尺寸" value={`${decoded.width} × ${decoded.height}`} />
-				<Stat label="帧数" value={`${decoded.frames.length}`} />
-				<Stat label="总时长" value={`${(totalDuration * 1000).toFixed(0)} ms`} />
-				<Stat label="平均 fps" value={fps > 0 ? fps.toFixed(2) : "—"} />
-				<Stat label="循环" value={loopLabel} />
-				<Stat label="文件大小" value={formatBytes(file.size)} />
+				<Stat label={t("info.dimension")} value={`${decoded.width} × ${decoded.height}`} />
+				<Stat label={t("info.frameCount")} value={`${decoded.frames.length}`} />
+				<Stat label={t("info.totalDuration")} value={`${(totalDuration * 1000).toFixed(0)} ms`} />
+				<Stat label={t("info.avgFps")} value={fps > 0 ? fps.toFixed(2) : "—"} />
+				<Stat label={t("info.loop")} value={loopLabel} />
+				<Stat label={t("info.fileSize")} value={formatBytes(file.size)} />
 			</div>
 		</section>
 	);
