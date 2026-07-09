@@ -152,6 +152,7 @@ export interface ExportOptions {
 	height: number
 	quality: number
 	playCount: number | "forever"
+	fps?: number
 }
 
 export async function exportGif(
@@ -165,6 +166,29 @@ export async function exportGif(
 	const width = Math.max(1, Math.round(options.width));
 	const height = Math.max(1, Math.round(options.height));
 	const clampedQuality = Math.min(1, Math.max(0, options.quality));
+
+	if (options.fps !== undefined && options.fps > 0) {
+		const fps = options.fps;
+		const encodeOptions: {
+			width: number
+			height: number
+			fps: number
+			quality: number
+			playCount?: number | "forever"
+		} = {
+			width,
+			height,
+			quality: clampedQuality,
+			fps,
+		};
+		if (options.playCount !== undefined) {
+			encodeOptions.playCount = options.playCount;
+		}
+		const input = frames.map(frame => frame.pixels);
+		const bytes = encodeAnimatedGIF(input, encodeOptions);
+		const buffer = new Uint8Array(bytes);
+		return new Blob([buffer.buffer], { type: "image/gif" });
+	}
 
 	const encodeOptions: Parameters<typeof encodeAnimatedGIF>[1] = {
 		width,

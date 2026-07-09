@@ -31,12 +31,15 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 	const [selectedIndices, setSelectedIndices] = useState<Set<number>>(() => {
 		return new Set(frames.map((_f: DecodedAnimatedGIFFrame, index: number) => index));
 	});
+	const [useCustomFps, setUseCustomFps] = useState(false);
+	const [fps, setFps] = useState(15);
 	// Reset selection when frames change (new file loaded).
 	const framesRef = useRef(frames);
 	useEffect(() => {
 		if (framesRef.current !== frames) {
 			framesRef.current = frames;
 			setSelectedIndices(new Set(frames.map((_, index) => index)));
+			setUseCustomFps(false);
 		}
 	}, [frames]);
 
@@ -108,11 +111,14 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 		}
 		const index = previewFrameIndex % selectedFrames.length;
 		setPreviewFrameIndex(index);
+		const delayMs = useCustomFps && fps > 0
+			? 1000 / fps
+			: selectedFrames[index].delay * 1000;
 		const timer = window.setTimeout(() => {
 			setPreviewFrameIndex(i => (i + 1) % selectedFrames.length);
-		}, Math.max(20, Math.round(selectedFrames[index].delay * 1000)));
+		}, Math.max(20, Math.round(delayMs)));
 		return () => window.clearTimeout(timer);
-	}, [previewFrameIndex, selectedFrames]);
+	}, [previewFrameIndex, selectedFrames, useCustomFps, fps]);
 
 	// Draw the current preview frame at the target resolution.
 	const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -173,6 +179,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 				height: targetHeight,
 				quality,
 				playCount,
+				fps: useCustomFps && fps > 0 ? fps : undefined,
 			});
 			const base = fileName.replace(/\.gif$/i, "");
 			triggerDownload(blob, `${base}-edited.gif`);
@@ -410,6 +417,48 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 								)
 								: null}
 						</div>
+					</div>
+
+					<div>
+						<div className="flex items-center justify-between">
+							<span className="text-sm font-medium">{t("editor.fps")}</span>
+							<label className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+								<input
+									type="checkbox"
+									checked={useCustomFps}
+									onChange={event => setUseCustomFps(event.target.checked)}
+									className="rounded"
+								/>
+								{t("editor.fpsOverride")}
+							</label>
+						</div>
+						{useCustomFps
+							? (
+								<div className="mt-1 flex items-center gap-2">
+									<input
+										type="number"
+										min={1}
+										max={50}
+										step={1}
+										value={fps}
+										onChange={(event) => {
+											const next = Number(event.target.value);
+											if (Number.isFinite(next)) {
+												setFps(Math.max(1, Math.min(50, Math.round(next))));
+											}
+										}}
+										className="w-24 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+									/>
+									<span className="text-xs text-zinc-500 dark:text-zinc-400">
+										{t("editor.fpsUnit")}
+									</span>
+								</div>
+							)
+							: (
+								<p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
+									{t("editor.fpsHint")}
+								</p>
+							)}
 					</div>
 				</div>
 			</div>
