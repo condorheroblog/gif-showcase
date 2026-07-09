@@ -1,5 +1,6 @@
 import type { DecodedAnimatedGIF, DecodedAnimatedGIFFrame, EncodableFrame } from "../lib/gif";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useFrameThumbnails } from "../lib/frameCache";
 import {
 
@@ -7,8 +8,6 @@ import {
 	resizeRgbaFrames,
 	triggerDownload,
 } from "../lib/gif";
-import { useI18n } from "../i18n/I18nProvider";
-import { isTranslationKey, type TranslationKey } from "../i18n/translations";
 
 interface EditorPanelProps {
 	decoded: DecodedAnimatedGIF
@@ -25,7 +24,7 @@ function gcd(a: number, b: number): number {
 }
 
 export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
-	const { t } = useI18n();
+	const { t } = useTranslation();
 	const { width: sourceWidth, height: sourceHeight, frames } = decoded;
 	const { thumbnails } = useFrameThumbnails(frames, sourceWidth, sourceHeight);
 
@@ -180,9 +179,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 		}
 		catch (error) {
 			const raw = error instanceof Error ? error.message : "";
-			const fallback = t("editor.exportFail");
-			const message = isTranslationKey(raw) ? t(raw as TranslationKey) : (raw || fallback);
-			setExportError(message);
+			setExportError(raw || t("editor.exportFail"));
 		}
 		finally {
 			setIsExporting(false);

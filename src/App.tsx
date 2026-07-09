@@ -1,3 +1,5 @@
+import type { ErrorKey } from "./lib/errorKey";
+import { useTranslation } from "react-i18next";
 import { EditorPanel } from "./components/EditorPanel";
 import { Header } from "./components/Header";
 import { InfoPanel } from "./components/InfoPanel";
@@ -5,17 +7,17 @@ import { PreviewPanel } from "./components/PreviewPanel";
 import { UploadZone } from "./components/UploadZone";
 import { useGif } from "./hooks/useGif";
 import { useTheme } from "./hooks/useTheme";
-import { useI18n } from "./i18n/I18nProvider";
-import { isTranslationKey, type TranslationKey } from "./i18n/translations";
+import { useLanguageSync } from "./i18n/useLanguageSync";
+import { isErrorKey } from "./lib/errorKey";
 
 function App() {
 	const { theme, toggleTheme } = useTheme();
 	const { state, loadFromFile, setViewMode, reset } = useGif();
-	const { t } = useI18n();
+	const { t } = useTranslation();
+	useLanguageSync();
 
-	// Errors thrown by useGif are stored as i18n keys; translate before display.
 	const errorText = state.status === "error"
-		? (isTranslationKey(state.message) ? t(state.message as TranslationKey) : state.message)
+		? (isErrorKey(state.message) ? t(state.message as ErrorKey) : state.message)
 		: undefined;
 
 	return (

@@ -74,17 +74,16 @@ export function useGif(): {
 			const bytes = await loadGifBytes(file);
 			const decoded = decodeGif(bytes);
 			if (decoded.frames.length === 0) {
-				throw new Error("__i18n__:upload.emptyFile");
+				dispatch({ type: "load-error", message: "upload.emptyFile" });
+				return;
 			}
 			dispatch({
 				type: "load-success",
 				loaded: { file, decoded, selectedFrameIndices: null },
 			});
 		}
-		catch (error) {
-			const raw = error instanceof Error ? error.message : "__i18n__:upload.parseError";
-			const key = raw.startsWith("__i18n__:") ? raw.slice("__i18n__:".length) : null;
-			dispatch({ type: "load-error", message: key ?? raw });
+		catch {
+			dispatch({ type: "load-error", message: "upload.parseError" });
 		}
 	}, []);
 

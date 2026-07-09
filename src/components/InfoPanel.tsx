@@ -1,12 +1,12 @@
 import type { ViewMode } from "../hooks/useGif";
 import type { DecodedAnimatedGIF } from "../lib/gif";
+import { useTranslation } from "react-i18next";
 import {
 	averageFps,
 
 	formatBytes,
 	totalDurationSeconds,
 } from "../lib/gif";
-import { useI18n } from "../i18n/I18nProvider";
 
 interface InfoPanelProps {
 	file: File
@@ -27,7 +27,7 @@ function Stat({ label, value }: { label: string, value: string }) {
 }
 
 export function InfoPanel({ file, decoded, viewMode, onChangeViewMode }: InfoPanelProps) {
-	const { t } = useI18n();
+	const { t } = useTranslation();
 	const totalDuration = totalDurationSeconds(decoded.frames);
 	const fps = averageFps(decoded.frames);
 	const loopLabel

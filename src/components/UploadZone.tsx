@@ -1,6 +1,6 @@
 import type { ChangeEvent, DragEvent } from "react";
 import { useCallback, useRef, useState } from "react";
-import { useI18n } from "../i18n/I18nProvider";
+import { useTranslation } from "react-i18next";
 
 interface UploadZoneProps {
 	onFile: (file: File) => void
@@ -11,7 +11,7 @@ interface UploadZoneProps {
 const MAX_BYTES = 20 * 1024 * 1024; // 20 MB
 
 export function UploadZone({ onFile, errorMessage, disabled }: UploadZoneProps) {
-	const { t } = useI18n();
+	const { t } = useTranslation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [isDragging, setIsDragging] = useState(false);
 	const [localError, setLocalError] = useState<string | null>(null);

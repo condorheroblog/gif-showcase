@@ -1,10 +1,9 @@
 import type { ChangeEvent } from "react";
 import type { DecodedAnimatedGIF, DecodedAnimatedGIFFrame } from "../lib/gif";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useFrameThumbnails } from "../lib/frameCache";
 import { frameToPngBlob, totalDurationSeconds, triggerDownload } from "../lib/gif";
-import { useI18n } from "../i18n/I18nProvider";
-import { isTranslationKey, type TranslationKey } from "../i18n/translations";
 
 interface PreviewPanelProps {
 	decoded: DecodedAnimatedGIF
@@ -12,7 +11,7 @@ interface PreviewPanelProps {
 }
 
 export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
-	const { t } = useI18n();
+	const { t } = useTranslation();
 	const { width, height, frames } = decoded;
 	const totalDuration = totalDurationSeconds(frames);
 	const { thumbnails } = useFrameThumbnails(frames, width, height);
@@ -88,8 +87,7 @@ export function PreviewPanel({ decoded, fileName }: PreviewPanelProps) {
 		}
 		catch (error) {
 			const raw = error instanceof Error ? error.message : "";
-			const fallback = t("preview.downloadFail");
-			const message = isTranslationKey(raw) ? t(raw as TranslationKey) : (raw || fallback);
+			const message = raw || t("preview.downloadFail");
 			window.alert(t("preview.exportError", { message }));
 		}
 	};

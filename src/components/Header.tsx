@@ -1,6 +1,7 @@
 import type { Theme } from "../hooks/useTheme";
-import { useI18n } from "../i18n/I18nProvider";
-import { LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from "../i18n/translations";
+import type { SupportedLanguage } from "../i18n/i18n";
+import { useTranslation } from "react-i18next";
+import { LANGUAGE_LABELS, SUPPORTED_LANGUAGES } from "../i18n/i18n";
 
 interface HeaderProps {
 	theme: Theme
@@ -10,12 +11,14 @@ interface HeaderProps {
 }
 
 export function Header({ theme, onToggleTheme, showReset, onReset }: HeaderProps) {
-	const { t, locale, setLocale } = useI18n();
+	const { t, i18n } = useTranslation();
+
+	const currentLang = (i18n.resolvedLanguage ?? i18n.language ?? "zh-CN") as SupportedLanguage;
+	const currentIndex = SUPPORTED_LANGUAGES.indexOf(currentLang);
+	const nextLang = SUPPORTED_LANGUAGES[(currentIndex + 1) % SUPPORTED_LANGUAGES.length] ?? SUPPORTED_LANGUAGES[0];
 
 	const toggleLocale = () => {
-		const idx = SUPPORTED_LOCALES.indexOf(locale);
-		const next = SUPPORTED_LOCALES[(idx + 1) % SUPPORTED_LOCALES.length] as Locale;
-		setLocale(next);
+		void i18n.changeLanguage(nextLang);
 	};
 
 	return (
@@ -67,7 +70,7 @@ export function Header({ theme, onToggleTheme, showReset, onReset }: HeaderProps
 						title={t("header.language")}
 						className="rounded-lg h-8 px-2 sm:h-9 sm:px-2.5 inline-flex items-center justify-center text-xs sm:text-sm font-medium border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition active:scale-[0.98]"
 					>
-						<span aria-hidden>{LOCALE_LABELS[locale]}</span>
+						<span aria-hidden>{LANGUAGE_LABELS[currentLang]}</span>
 					</button>
 					<button
 						type="button"

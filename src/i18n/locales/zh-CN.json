@@ -1,0 +1,80 @@
+{
+	"header": {
+		"title": "GIF Showcase",
+		"subtitle": "基于 {{lib}} 的演示",
+		"reset": "重新上传",
+		"toggleTheme": "切换明暗模式",
+		"github": "GitHub ↗",
+		"language": "切换语言"
+	},
+	"app": {
+		"heroTitle": "一个超轻量的",
+		"heroSubtitle": "在线演示",
+		"heroDescription": "全部在浏览器中完成解码、预览与重新编码，基于 {{lib}}。",
+		"loading": "正在解析 GIF…",
+		"footer": "纯前端演示，不会上传文件"
+	},
+	"upload": {
+		"prompt": "拖拽 GIF 到此处，或",
+		"promptAction": "点击选择文件",
+		"hint": "支持 .gif 格式 · 最大 20 MB · 文件不会上传到服务器",
+		"fileTooLarge": "文件太大（{{size}} MB），最大支持 20 MB。",
+		"emptyFile": "GIF 不包含任何帧。",
+		"parseError": "无法解析该 GIF 文件。"
+	},
+	"info": {
+		"tablist": "面板切换",
+		"previewTab": "▶ 预览",
+		"editTab": "✎ 编辑",
+		"summary": "{{size}} · {{count}} 帧 · 总时长 {{ms}} ms",
+		"dimension": "尺寸",
+		"frameCount": "帧数",
+		"totalDuration": "总时长",
+		"avgFps": "平均 fps",
+		"loop": "循环",
+		"fileSize": "文件大小",
+		"loopDefault": "默认（不循环）",
+		"loopForever": "无限循环",
+		"loopTimes": "{{count}} 次"
+	},
+	"preview": {
+		"title": "预览",
+		"frameIndex": "帧 {{index}} / {{total}}",
+		"prevFrame": "⏮ 上一帧",
+		"nextFrame": "下一帧 ⏭",
+		"play": "▶ 播放",
+		"pause": "⏸ 暂停",
+		"saveFrame": "⬇ 保存当前帧",
+		"frameTiming": "{{ms}} ms / {{total}} ms · 帧间隔 {{delay}} ms",
+		"timelineLabel": "时间线（拖动跳到指定帧）",
+		"timelineAria": "帧时间线",
+		"frameTitle": "帧 {{index}} · {{delay}} ms",
+		"frameAlt": "帧 {{index}}",
+		"exportError": "无法导出当前帧：{{message}}",
+		"downloadFail": "下载失败"
+	},
+	"editor": {
+		"title": "编辑",
+		"selected": "已选 {{selected}} / {{total}} 帧",
+		"frameSelection": "帧选择",
+		"selectAll": "全选",
+		"invertSelection": "反选",
+		"keepOneFrame": "请至少保留一帧。",
+		"sizeTooSmall": "尺寸不能小于 {{min}}px。",
+		"exportFail": "导出失败",
+		"dimension": "尺寸",
+		"width": "宽",
+		"height": "高",
+		"lockAspect": "锁定宽高比",
+		"original": "原始",
+		"quality": "压缩质量",
+		"qualityHint": "越低压缩越狠（颜色量化更激进），越高越接近原画质。",
+		"loop": "循环",
+		"loopForever": "无限",
+		"loopCount": "指定次数",
+		"livePreview": "实时预览",
+		"noFrame": "请至少保留一帧",
+		"exporting": "正在生成…",
+		"export": "⬇ 保存为新 GIF"
+	}
+}

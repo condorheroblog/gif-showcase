@@ -1,0 +1,80 @@
+{
+	"header": {
+		"title": "GIF Showcase",
+		"subtitle": "A demo built on {{lib}}",
+		"reset": "Re-upload",
+		"toggleTheme": "Toggle light/dark mode",
+		"github": "GitHub ↗",
+		"language": "Switch language"
+	},
+	"app": {
+		"heroTitle": "A super lightweight",
+		"heroSubtitle": "online demo",
+		"heroDescription": "Decode, preview and re-encode right in your browser, powered by {{lib}}.",
+		"loading": "Parsing GIF…",
+		"footer": "Pure front-end demo. No files are uploaded."
+	},
+	"upload": {
+		"prompt": "Drop a GIF here, or",
+		"promptAction": "click to choose a file",
+		"hint": ".gif only · up to 20 MB · files never leave your browser",
+		"fileTooLarge": "File is too large ({{size}} MB). Maximum is 20 MB.",
+		"emptyFile": "The GIF contains no frames.",
+		"parseError": "Unable to parse this GIF file."
+	},
+	"info": {
+		"tablist": "Panel switcher",
+		"previewTab": "▶ Preview",
+		"editTab": "✎ Edit",
+		"summary": "{{size}} · {{count}} frames · total {{ms}} ms",
+		"dimension": "Size",
+		"frameCount": "Frames",
+		"totalDuration": "Duration",
+		"avgFps": "Avg fps",
+		"loop": "Loop",
+		"fileSize": "File size",
+		"loopDefault": "Default (no loop)",
+		"loopForever": "Forever",
+		"loopTimes": "{{count}} times"
+	},
+	"preview": {
+		"title": "Preview",
+		"frameIndex": "Frame {{index}} / {{total}}",
+		"prevFrame": "⏮ Previous",
+		"nextFrame": "Next ⏭",
+		"play": "▶ Play",
+		"pause": "⏸ Pause",
+		"saveFrame": "⬇ Save current frame",
+		"frameTiming": "{{ms}} ms / {{total}} ms · frame delay {{delay}} ms",
+		"timelineLabel": "Timeline (drag to jump to a frame)",
+		"timelineAria": "Frame timeline",
+		"frameTitle": "Frame {{index}} · {{delay}} ms",
+		"frameAlt": "Frame {{index}}",
+		"exportError": "Failed to export the current frame: {{message}}",
+		"downloadFail": "Download failed"
+	},
+	"editor": {
+		"title": "Edit",
+		"selected": "{{selected}} / {{total}} frames selected",
+		"frameSelection": "Frame selection",
+		"selectAll": "Select all",
+		"invertSelection": "Invert",
+		"keepOneFrame": "Please keep at least one frame.",
+		"sizeTooSmall": "Size must be at least {{min}}px.",
+		"exportFail": "Export failed",
+		"dimension": "Size",
+		"width": "Width",
+		"height": "Height",
+		"lockAspect": "Lock aspect ratio",
+		"original": "Original",
+		"quality": "Quality",
+		"qualityHint": "Lower values compress harder (more aggressive color quantization); higher values stay closer to the original.",
+		"loop": "Loop",
+		"loopForever": "Forever",
+		"loopCount": "Times",
+		"livePreview": "Live preview",
+		"noFrame": "Please keep at least one frame",
+		"exporting": "Generating…",
+		"export": "⬇ Save as new GIF"
+	}
+}

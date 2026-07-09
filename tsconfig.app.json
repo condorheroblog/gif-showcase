@@ -7,6 +7,7 @@
 		"useDefineForClassFields": true,
 		"module": "ESNext",
 		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
 		"types": ["@sindresorhus/gifkit"],
 		"allowImportingTsExtensions": true,
 		"strict": true,
@@ -14,6 +15,8 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noEmit": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
 		"isolatedModules": true,
 		"skipLibCheck": true
 	},
