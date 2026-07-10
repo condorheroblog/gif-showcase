@@ -8,6 +8,7 @@ import {
 	resizeRgbaFrames,
 	triggerDownload,
 } from "../lib/gif";
+import { FrameGalleryModal } from "./FrameGalleryModal";
 
 interface EditorPanelProps {
 	decoded: DecodedAnimatedGIF
@@ -52,6 +53,18 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 	const [previewFrameIndex, setPreviewFrameIndex] = useState(0);
 	const [isExporting, setIsExporting] = useState(false);
 	const [exportError, setExportError] = useState<string | null>(null);
+	const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+	const [zoomedIndex, setZoomedIndex] = useState<number | null>(null);
+
+	const galleryCell = Math.max(
+		96,
+		Math.min(160, Math.round(Math.max(sourceWidth, sourceHeight) * 0.6)),
+	);
+
+	const closeGallery = () => {
+		setIsGalleryOpen(false);
+		setZoomedIndex(null);
+	};
 
 	const aspectRatio = sourceWidth / sourceHeight;
 
@@ -212,7 +225,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 				<div>
 					<div className="flex items-center justify-between mb-2">
 						<span className="text-sm font-medium">{t("editor.frameSelection")}</span>
-						<div className="flex gap-1.5">
+						<div className="flex items-center gap-1.5">
 							<button
 								type="button"
 								onClick={selectAll}
@@ -227,6 +240,27 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 							>
 								{t("editor.invertSelection")}
 							</button>
+							<button
+								type="button"
+								onClick={() => setIsGalleryOpen(true)}
+								aria-label={t("editor.openGallery")}
+								title={t("editor.openGallery")}
+								className="rounded-md border border-zinc-200 dark:border-zinc-700 p-1 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-[0.98] transition"
+							>
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									aria-hidden="true"
+								>
+									<path d="M3 7V3h4M21 7V3h-4M3 17v4h4M21 17v4h-4" />
+								</svg>
+							</button>
 						</div>
 					</div>
 					<div
@@ -239,10 +273,20 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 						{frames.map((_frame: DecodedAnimatedGIFFrame, index: number) => {
 							const checked = selectedIndices.has(index);
 							return (
-								<label
+								<div
 									key={index}
+									role="checkbox"
+									aria-checked={checked}
+									tabIndex={0}
+									onClick={() => toggleIndex(index)}
+									onKeyDown={(event) => {
+										if (event.key === " " || event.key === "Enter") {
+											event.preventDefault();
+											toggleIndex(index);
+										}
+									}}
 									className={[
-										"relative rounded-md overflow-hidden border-2 cursor-pointer transition",
+										"relative rounded-md overflow-hidden border-2 cursor-pointer transition outline-none focus-visible:ring-2 focus-visible:ring-pink-400",
 										checked
 											? "border-pink-500 shadow-sm"
 											: "border-zinc-200 dark:border-zinc-700 opacity-40",
@@ -253,12 +297,6 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 										delay: Math.round(frames[index].delay * 1000),
 									})}
 								>
-									<input
-										type="checkbox"
-										className="sr-only"
-										checked={checked}
-										onChange={() => toggleIndex(index)}
-									/>
 									{thumbnails[index]
 										? (
 											<img
@@ -277,7 +315,7 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 									<span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[9px] tabular-nums leading-tight py-0.5 text-center">
 										{index + 1}
 									</span>
-								</label>
+								</div>
 							);
 						})}
 					</div>
@@ -514,6 +552,25 @@ export function EditorPanel({ decoded, fileName }: EditorPanelProps) {
 					{isExporting ? t("editor.exporting") : t("editor.export")}
 				</button>
 			</div>
+
+			{isGalleryOpen
+				? (
+					<FrameGalleryModal
+						frames={frames}
+						thumbnails={thumbnails}
+						sourceWidth={sourceWidth}
+						sourceHeight={sourceHeight}
+						cellSize={galleryCell}
+						zoomedIndex={zoomedIndex}
+						selectedIndices={selectedIndices}
+						onEnterZoom={setZoomedIndex}
+						onToggleIndex={toggleIndex}
+						onSelectAll={selectAll}
+						onInvertSelection={invertSelection}
+						onClose={closeGallery}
+					/>
+				)
+				: null}
 		</section>
 	);
 }

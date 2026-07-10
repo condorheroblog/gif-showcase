@@ -79,6 +79,12 @@
 		"livePreview": "实时预览",
 		"noFrame": "请至少保留一帧",
 		"exporting": "正在生成…",
-		"export": "⬇ 保存为新 GIF"
+		"export": "⬇ 保存为新 GIF",
+		"openGallery": "查看帧详情",
+		"galleryTitle": "帧详情",
+		"close": "关闭",
+		"zoomReset": "重置",
+		"prevFrameShort": "上一帧",
+		"nextFrameShort": "下一帧"
 	}
 }

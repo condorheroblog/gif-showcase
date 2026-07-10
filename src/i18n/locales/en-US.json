@@ -79,6 +79,12 @@
 		"livePreview": "Live preview",
 		"noFrame": "Please keep at least one frame",
 		"exporting": "Generating…",
-		"export": "⬇ Save as new GIF"
+		"export": "⬇ Save as new GIF",
+		"openGallery": "View frames in detail",
+		"galleryTitle": "Frame details",
+		"close": "Close",
+		"zoomReset": "Reset",
+		"prevFrameShort": "Prev",
+		"nextFrameShort": "Next"
 	}
 }
