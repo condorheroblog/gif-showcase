@@ -1,6 +1,6 @@
 # GIF Showcase
 
-An ultra-lightweight, **100% client-side** GIF demo built on top of [`@sindresorhus/gifkit`](https://github.com/sindresorhus/gifkit). Upload an animated GIF, inspect its metadata, scrub through its frames, edit it (resize / drop frames / tweak quality / loop count), and re-encode it — all without sending a single byte to a server.
+An ultra-lightweight, **100% client-side** GIF demo built on top of [`@sindresorhus/gifkit`](https://github.com/sindresorhus/gifkit). Upload an animated GIF, inspect its metadata, scrub through its frames, edit it (resize / drop frames / tweak quality / loop count / override FPS), and re-encode it — all without sending a single byte to a server.
 
 🌐 **Live demo:** [https://condorheroblog.github.io/gif-showcase/](https://condorheroblog.github.io/gif-showcase/)
 
@@ -9,6 +9,7 @@ An ultra-lightweight, **100% client-side** GIF demo built on top of [`@sindresor
 ## ✨ Features
 
 - **Local-only processing** — decoding, frame rendering and re-encoding happen entirely in the browser via `OffscreenCanvas` / `HTMLCanvasElement`.
+- **Bilingual UI** — ships with `zh-CN` and `en-US` powered by `i18next` + `react-i18next` + `i18next-browser-languagedetector`. The detected language is cached in `localStorage` and can be switched at any time from the header.
 - **Preview mode**
   - Metadata overview (dimensions, frame count, total duration, average FPS, file size, loop count).
   - Animated canvas preview with play / pause / prev / next controls.
@@ -19,6 +20,7 @@ An ultra-lightweight, **100% client-side** GIF demo built on top of [`@sindresor
   - Resize with optional aspect-ratio lock and quick preset factors (50 / 75 / 100 / 150 / 200 %).
   - Quality slider (0.1 – 1.0) wired to `gifkit`'s color quantizer.
   - Loop control: *forever* or a custom play count.
+  - **Custom FPS override** — keep the original per-frame delays or switch to a uniform frame rate (0 – 60 fps) before exporting.
   - Live preview canvas that reflects your edits in real time.
   - One-click export of the edited GIF as `<name>-edited.gif`.
 - **Dark / light theme** — follows system preference on first visit, then remembers the user's choice in `localStorage`.
@@ -32,6 +34,7 @@ An ultra-lightweight, **100% client-side** GIF demo built on top of [`@sindresor
 | UI framework | React 19 + TypeScript (strict)                        |
 | Styling      | [Tailwind CSS v4](https://tailwindcss.com/) via `@tailwindcss/vite` |
 | GIF engine   | [`@sindresorhus/gifkit`](https://github.com/sindresorhus/gifkit) |
+| i18n         | [i18next](https://www.i18next.com/) + `react-i18next` + `i18next-browser-languagedetector` |
 | Linting      | [`@antfu/eslint-config`](https://github.com/antfu/eslint-config) + `eslint-plugin-react-refresh` |
 | Hooks        | `simple-git-hooks` + `lint-staged` + `commitlint` (Conventional Commits) |
 
@@ -50,27 +53,29 @@ pnpm build
 # 4. Preview the production build locally
 pnpm preview
 
-# 5. Lint
+# 5. Lint & type-check
 pnpm lint
+pnpm typecheck
 ```
 
 ## 🗂 Project Layout
 
 ```
 gif-showcase/
-├── .github/workflows/deploy.yml   # GitHub Pages deployment
+├── .github/workflows/deploy.yml      # GitHub Pages deployment
 ├── src/
-│   ├── components/                # Header, UploadZone, InfoPanel, PreviewPanel, EditorPanel
-│   ├── hooks/                     # useGif, useTheme
-│   ├── lib/                       # gif.ts (decode / encode / resize / download), frameCache.ts
-│   ├── shims/node-util.ts         # browser polyfill for gifkit's node:util import
+│   ├── components/                   # Header, UploadZone, InfoPanel, PreviewPanel, EditorPanel
+│   ├── hooks/                        # useGif, useTheme
+│   ├── i18n/                         # i18next bootstrap (locales/, i18n.ts, useLanguageSync.ts)
+│   ├── lib/                          # gif.ts (decode / encode / resize / download), frameCache.ts, errorKey.ts
+│   ├── shims/node-util.ts            # browser polyfill for gifkit's node:util import
 │   ├── App.tsx
 │   ├── main.tsx
-│   └── index.css                  # Tailwind v4 entry
+│   └── index.css                     # Tailwind v4 entry
 ├── index.html
 ├── vite.config.ts
 ├── eslint.config.js
-├── tsconfig*.json
+├── tsconfig.json
 └── package.json
 ```
 
@@ -97,4 +102,4 @@ No upload, no telemetry, no third-party requests beyond the initial bundle. Your
 
 ## 📜 License
 
-MIT.
+[MIT](https://github.com/condorheroblog/gif-showcase/blob/main/LICENSE) License © 2026-Present [Condor Hero](https://github.com/condorheroblog).

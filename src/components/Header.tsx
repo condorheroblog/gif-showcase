@@ -55,7 +55,7 @@ export function Header({ theme, onToggleTheme, showReset, onReset }: HeaderProps
 						)
 						: null}
 					<a
-						href="https://github.com/sindresorhus/gifkit"
+						href="https://github.com/condorheroblog/gif-showcase"
 						target="_blank"
 						rel="noreferrer noopener"
 						className="rounded-lg px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition active:scale-[0.98]"
