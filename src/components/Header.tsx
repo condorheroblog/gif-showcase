@@ -26,7 +26,7 @@ export function Header({ theme, onToggleTheme, showReset, onReset }: HeaderProps
 			<div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
 				<div className="flex items-center gap-2 min-w-0">
 					<img
-						src="/logo.svg"
+						src={`${import.meta.env.BASE_URL}logo.svg`}
 						alt=""
 						width={32}
 						height={32}
